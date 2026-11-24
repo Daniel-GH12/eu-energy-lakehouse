@@ -13,6 +13,7 @@ from pathlib import Path
 import httpx
 
 from energy_lakehouse.ingestion.ree_client import fetch_ree_prices, save_to_bronze
+from energy_lakehouse.storage import sync_artifact_if_s3_enabled
 from energy_lakehouse.transformation.silver_prices import (
     parse_bronze_prices,
     save_to_silver,
@@ -67,6 +68,7 @@ def run_pipeline(
     target_date: date,
     data_dir: Path = Path("data"),
     dbt_dir: Path = Path("dbt"),
+    s3_bucket: str | None = None,
 ) -> None:
     """Ejecuta en orden estricto las fases Bronze, Silver y Gold para una fecha."""
     date_str = target_date.isoformat()
@@ -81,7 +83,12 @@ def run_pipeline(
         target_date,
         base_dir=data_dir / "bronze",
     )
-    logger.info("[Fase 1/3 - Bronze] Completada -> %s", bronze_path)
+    bronze_target = sync_artifact_if_s3_enabled(
+        bronze_path,
+        s3_key=f"bronze/ree_prices/date={date_str}/raw.json",
+        s3_bucket=s3_bucket,
+    )
+    logger.info("[Fase 1/3 - Bronze] Completada -> %s", bronze_target)
 
     # Fase 2: Transformación y contrato Pandera -> Silver
     logger.info("[Fase 2/3 - Silver] Inicio de limpieza y validación")
@@ -91,10 +98,15 @@ def run_pipeline(
         target_date,
         base_dir=data_dir / "silver",
     )
+    silver_target = sync_artifact_if_s3_enabled(
+        silver_path,
+        s3_key=f"silver/ree_prices/date={date_str}/prices.parquet",
+        s3_bucket=s3_bucket,
+    )
     logger.info(
         "[Fase 2/3 - Silver] Completada (%d filas) -> %s",
         len(silver_df),
-        silver_path,
+        silver_target,
     )
 
     # Fase 3: Modelos analíticos y tests dbt -> Gold
