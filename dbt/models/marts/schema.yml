@@ -1,0 +1,25 @@
+version: 2
+
+models:
+  - name: mart_hourly_price_spread
+    description: >
+      Comparativa horaria entre el precio regulado PVPC y el mercado mayorista Spot
+      (agregado desde resolución cuartohoraria), incluyendo spread y rango intrahorario.
+    columns:
+      - name: hour_utc
+        description: Marca temporal truncada a la hora en UTC.
+        data_tests:
+          - unique
+          - not_null
+      - name: pvpc_eur_mwh
+        description: Precio PVPC horario en EUR/MWh.
+        data_tests:
+          - not_null
+      - name: spot_avg_eur_mwh
+        description: Precio medio horario del mercado Spot en EUR/MWh.
+        data_tests:
+          - not_null
+      - name: pvpc_spot_spread_eur_mwh
+        description: Diferencia horaria PVPC menos media Spot en EUR/MWh.
+        data_tests:
+          - not_null

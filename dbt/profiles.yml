@@ -1,0 +1,7 @@
+energy_lakehouse:
+  target: dev
+  outputs:
+    dev:
+      type: duckdb
+      path: 'data/gold/energy.duckdb'
+      threads: 4
