@@ -1,5 +1,5 @@
 # EU Energy Lakehouse (REE Market Prices)
-
+[![CI](https://github.com/Daniel-GH12/eu-energy-lakehouse/actions/workflows/ci.yml/badge.svg)](https://github.com/Daniel-GH12/eu-energy-lakehouse/actions/workflows/ci.yml)
 ## Problema de negocio y solución
 
 El mercado eléctrico español publica precios con **granularidad mixta** (tarifa regulada **PVPC** horaria frente a mercado mayorista **Spot** cuartohorario cada 15 min) y marca temporal en hora local con cambios de horario (CET/CEST).  
